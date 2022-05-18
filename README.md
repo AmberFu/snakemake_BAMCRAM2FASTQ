@@ -9,6 +9,11 @@ BAM or CRAM file to pair end FASTQ
 > 
 > OUTPUT file format: pair-end FASTQ
 
+
+```
+bsub -Is -G compute-jin810 -q general-interactive -n 12 -M 12GB -R 'select[mem>12GB] span[hosts=1] rusage[mem=12GB]' -a 'docker(snakemake/snakemake:stable)' /bin/bash
+```
+
 ### Snakemake folder structure
 
 * Best practice of sankemake project structure: https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#distribution-and-reproducibility

@@ -1,0 +1,42 @@
+'''
+Po-Ying Fu
+2022/05/13 Create
+
+This pipeline is for Convert BAM/CRAM to FASTQ
+STEPs:
+  1. Create header file for BAM/CRAM
+  2. Extract reference info from header file
+  3. Convert BAM/CRAM to FASTQ
+  
+SNAKEMAKE_OUTPUT_CACHE=/storage1/fs1/jin810/Active/fup/snakemake_SNAKEMAKE_OUTPUT_CACHE
+SNAKEMAKE_CONDA_PREFIX=/storage1/fs1/jin810/Active/fup/snakemake_SNAKEMAKE_CONDA_PREFIX
+
+
+'''
+
+# Standard Configuration:
+configfile: "config/config.yaml"
+
+##### Modules #####
+include: "rules/common.smk"
+#include: "rules/bam_cram_header.smk"
+include: "rules/sort_and_index_bamcram.smk"
+include: "rules/bam2fastq.smk"
+
+### Get BAMCRAM_FILESPATH from file
+# Declare in workflow/rules/common.smk
+#print(SAMPLES) # -> ie, PCGC0106024_HS_WG__1-05937-02__v1_FCXXX_L1_p1of1_P1.cram
+
+FASTQs = []
+for index, row in SAMPLES.iterrows():
+    FASTQs.append('FASTQs_{}/{}_r1.fastq.gz'.format(row['BAM_CRAM'],row['BAMCRAM_FILENAME']))
+    FASTQs.append('FASTQs_{}/{}_r2.fastq.gz'.format(row['BAM_CRAM'],row['BAMCRAM_FILENAME']))
+
+##### Target rules #####
+# https://snakemake.readthedocs.io/en/stable/tutorial/basics.html#step-7-adding-a-target-rule
+rule all:
+    input:
+        expand("/storage1/fs1/jin810/Active/PCGC_CHD_IncRNA_2022/snakemake_BAMCRAM2FASTQ/results/{fastqs}", fastqs=FASTQs),
+
+
+
